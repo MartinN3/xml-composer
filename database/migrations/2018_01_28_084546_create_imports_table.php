@@ -29,6 +29,6 @@ class CreateImportsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('imports');
+        Schema::dropIfExists('imports_log');
     }
 }

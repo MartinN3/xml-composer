@@ -11,7 +11,19 @@ use Illuminate\Support\Str;
 
 class ImportController extends Controller
 {
-    public function store(Request $request)
+    public function backup(Request $request)
+    {
+        $systemName = request('systemName');
+
+        if ( null === $systemName ) {
+            die('Unspecified `systemName` in request');
+        }
+
+        Import::backupImages($systemName);
+
+        return back();
+    }
+    public function store(Request $request, $uploadType, $systemName)
     {
         $import = new Import();
         $uploadType = request('uploadType');
@@ -22,7 +34,7 @@ class ImportController extends Controller
         }
 
         if ( null === $systemName ) {
-            die('Unspecified `uploadType` in request');
+            die('Unspecified `systemName` in request');
         }
 
         switch ($uploadType) {
@@ -48,7 +60,7 @@ class ImportController extends Controller
                 $XML = $fileUploaded->storeAs("xml/{$systemName}", $name);
                 $XML = Storage::get($XML);
                 break;
-            
+
             default:
                 die('This `uploadType` request has no case specified');
                 break;
@@ -75,5 +87,10 @@ class ImportController extends Controller
         }
 
         return back();
+    }
+
+    public function pohoda(Request $request)
+    {
+        var_dump(request()->all());die;
     }
 }

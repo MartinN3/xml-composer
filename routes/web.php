@@ -15,9 +15,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::post('/validate/show', 'ValidateController@show');
+
 Route::post('/import', 'ImportController@store');
 
-Route::get('/pohoda/url/{default?}', function ($default   = null) {
+Route::post('/import/pohoda', 'ImportController@pohoda');
+
+Route::post('/backup', 'ImportController@backup');
+
+Route::get('/pohoda/url/{default?}', function ($default = null) {
     $systemName = 'pohoda';
     if ($default === 'default') {
 		$url = "https://www.stormware.cz/xml/samples/version_2/export/Zasoby/Response/zasoby_01_v2.0.xml";
@@ -36,6 +42,10 @@ Route::get('/pohoda/url/{default?}', function ($default   = null) {
 
 Route::get('/pohoda/file', function () {
     return view('pohoda-file');
+});
+
+Route::get('/shoptet', function () {
+    return view('shoptet');
 });
 
 Route::get('/shoptet/url/{default?}', function ($default = null)

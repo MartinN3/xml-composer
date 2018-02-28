@@ -2,19 +2,15 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-use Config;
-
-use DB;
-
-use FilesystemIterator;
-
+use App\Helper;
 use Carbon\Carbon;
-
-use DomDocument;
-
+use Config;
+use DB;
 use DOMXPath;
+use DomDocument;
+use FilesystemIterator;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Import extends Model
 {
@@ -37,24 +33,29 @@ class Import extends Model
         return;
     }
 
-    public function createXmlDom($xml)
-    {
-        $dom = new DomDocument();
-        $dom->loadXML($xml);
-        return new DOMXPath($dom);
-    }
-
     public function parseShoptetXml($xml)
     {
         $args = [];
         $timestamp = $this->carbon;
-        $xpath = $this->createXmlDom($xml);
+        $xpath = Helper::createXmlDom($xml);
         $roots = $xpath->query('//SHOP');
         if ($roots->length > 0) {
             for ($i = 0; $i < $roots->length; $i++) {
                 $products = $xpath->query('./SHOPITEM', $roots->item($i));
                 for ($j = 0; $j < $products->length; $j++) {
                     $node = $products->item($j);
+
+                    if ( $xpath->evaluate('./@id', $node)->length >= 1 ) {
+                        $shoptet_id = $xpath->query('./@id', $node)->item(0)->nodeValue;
+                    } else {
+                        $shoptet_id = NULL;
+                    }
+
+                    if ( $xpath->evaluate('./NAME', $node)->length >= 1 ) {
+                        $name =  $xpath->query('./NAME', $node)->item(0)->nodeValue;
+                    } else {
+                        $name = NULL;
+                    }
 
                     if ( $xpath->evaluate('./CODE', $node)->length >= 1 ) {
                         $code =  $xpath->query('./CODE', $node)->item(0)->nodeValue;
@@ -74,15 +75,53 @@ class Import extends Model
                         $description = NULL;
                     }
 
-                    if ( $xpath->evaluate('./IMAGES', $node)->length >= 1 ) {
+                    if ( $xpath->evaluate('./CATEGORIES', $node)->length >= 1 ) {
+                        $categories = [];
+                        $categoriesRoot = $xpath->query('./CATEGORIES/CATEGORY', $node);
 
-                    }
-                 
+                        if ( $xpath->evaluate('./CATEGORIES/DEFAULT_CATEGORY', $node)->length >= 1 ) {
+                            $default_category =  $xpath->query('./CATEGORIES/DEFAULT_CATEGORY', $node)->item(0)->nodeValue;
+                        } else {
+                            $default_category = NULL;
+                        }
+                        
+                        if ($categoriesRoot->length > 0) {
+                            for ($k = 0; $k < $categoriesRoot->length; $k++) {
+                                $category =  $xpath->query('./CATEGORIES/CATEGORY', $node)->item($k)->nodeValue;
+                                array_push($categories, $category);
+                            };
+                        }
+                        
+                        $categories = implode('; ', $categories);
+                    } else {
+                       $categories = NULL;
+                    };
+
+                    if ( $xpath->evaluate('./IMAGES', $node)->length >= 1 ) {
+                        $images = [];
+                        $imagesRoot = $xpath->query('./IMAGES/IMAGE', $node);
+                        
+                        if ($imagesRoot->length > 0) {
+                            for ($k = 0; $k < $imagesRoot->length; $k++) {
+                                $image =  $xpath->query('./IMAGES/IMAGE', $node)->item($k)->nodeValue;
+                                array_push($images, $image);
+                            };
+                        }
+                        
+                        $images = implode('; ', $images);
+                    } else {
+                       $images = NULL;
+                    };
 
                     $values = [
+                        'name' => $name,
+                        'shoptet_id' => $shoptet_id,
+                        'categories' => $categories,
+                        'default_category' => $default_category,
                         'code' => $code,
                         'short_description' => $short_description,
                         'description' => $description,
+                        'images' => $images,
                         'created_at' => $timestamp,
                         'updated_at' => $timestamp
                     ];
@@ -91,14 +130,13 @@ class Import extends Model
                 }
             }
         }
-
         DB::table('stock_shoptet')->insert($args);
     }
 
     public function parsePohodaXml($xml)
     {
         $carbon = $this->carbon;
-        $xpath = $this->createXmlDom($xml);
+        $xpath = Helper::createXmlDom($xml);
     	$roots = $xpath->query('//rsp:responsePackItem/lStk:listStock');
     	if ($roots->length > 0) {
     	    for ($i = 0; $i < $roots->length; $i++) {
@@ -198,5 +236,40 @@ class Import extends Model
     	        }
     	    }
     	}
+    }
+
+    public static function backupImages($systemName)
+    {
+        switch ($systemName) {
+            case 'shoptet':
+                DB::table('stock_shoptet')->select('shoptet_id','images')->orderBy('id')->chunk(30, function ($query)
+                {
+                    foreach ($query as $row) {
+
+                        if ($row->images !== NULL) {
+                            $images = explode('; ', $row->images);
+                            $shoptet_id = $row->shoptet_id;
+                                               
+                            foreach ($images as $image) {
+                                $url = $image;
+                                $name = substr($url, strrpos($url, '/') + 1);
+                                $appendix = substr($name, strpos($name, '?'));
+                                $name = str_replace($appendix, '', $name);
+
+                                $contents = file_get_contents($url);
+                                Storage::put("./shoptetImages/{$shoptet_id}/{$name}", $contents);
+                            }
+                        };
+
+                        continue;
+                        
+                    }
+                });
+                break;
+            
+            default:
+                # code...
+                break;
+        }
     }
 }

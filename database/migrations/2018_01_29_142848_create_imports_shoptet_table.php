@@ -16,9 +16,14 @@ class CreateImportsShoptetTable extends Migration
         
         Schema::create('stock_shoptet', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name')->nullable();
+            $table->text('categories')->nullable();
+            $table->string('default_category')->nullable();
+            $table->integer('shoptet_id');
             $table->string('code')->nullable();
             $table->text('short_description')->nullable();
             $table->text('description')->nullable();
+            $table->text('images')->nullable();
             $table->timestamps();
         });
     }
