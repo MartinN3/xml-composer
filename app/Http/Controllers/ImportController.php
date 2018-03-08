@@ -23,7 +23,7 @@ class ImportController extends Controller
 
         return back();
     }
-    public function store(Request $request, $uploadType, $systemName)
+    public function store(Request $request)
     {
         $import = new Import();
         $uploadType = request('uploadType');
@@ -91,6 +91,6 @@ class ImportController extends Controller
 
     public function pohoda(Request $request)
     {
-        var_dump(request()->all());die;
+        var_dump($request->all());die;
     }
 }

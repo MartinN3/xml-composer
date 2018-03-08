@@ -63,6 +63,10 @@ class ValidateController extends Controller
            $validate->short_description();
            return back();   
            break;
+         case 'test':
+            $validate->test();
+            return back();
+            break;
          
          default:
            # code...

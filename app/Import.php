@@ -137,7 +137,7 @@ class Import extends Model
     {
         $carbon = $this->carbon;
         $xpath = Helper::createXmlDom($xml);
-    	$roots = $xpath->query('//rsp:responsePackItem/lStk:listStock');
+    	$roots = $xpath->query('//rsp:responsePack/rsp:responsePackItem/lStk:listStock');
     	if ($roots->length > 0) {
     	    for ($i = 0; $i < $roots->length; $i++) {
     	        $products = $xpath->query('./lStk:stock', $roots->item($i));
@@ -201,7 +201,6 @@ class Import extends Model
     	                }
     	            }
 
-
     	            if (empty($name)) {
     	                continue;
     	            }
@@ -210,13 +209,14 @@ class Import extends Model
     	                continue;
     	            }
 
-    	            $pictures = $xpath->query('./stk:stockHeader/stk:pictures/stk:picture', $node);
-    	            
-    	            for ($k = 0; $k < $pictures->length; $k++) {
-    	            	$node = $pictures->item($k);
+                    $pictures = array();
+    	            $pictures_items = $xpath->query('./stk:stockHeader/stk:pictures/stk:picture', $node);
+    	            for ($k = 0; $k < $pictures_items->length; $k++) {
+    	            	$node = $pictures_items->item($k);
     	            	$picture = $xpath->query('./stk:filepath', $node)->item(0)->nodeValue;
+                        array_push($pictures, $picture);
     	            }
-
+                    $pictures = implode('; ', $pictures);
 
                     DB::table('stock')->insertGetId(
                         [
@@ -226,13 +226,11 @@ class Import extends Model
                             'ean' => $ean,
                             'sellingPrice' => $sellingPrice,
                             'description' => $description,
+                            'pictures' => $pictures,
                             'created_at' => $carbon->now(),
                             'updated_at' => $carbon->now()
                         ]
                     );
-
-    	            // $picture = @$xpath->query('./stk:stockHeader/stk:pictures/stk:picture[@default="true"]/stk:filepath', $node)->item(0)->nodeValue;
-
     	        }
     	    }
     	}

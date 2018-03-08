@@ -101,6 +101,7 @@
                     <p>
                         <select name="validationRequest" id="validationRequest">
                             <option value="validateLength">Validovat Short Description</option>
+                            <option value="test">test</option>
                         </select>
                     </p>
                     <div>

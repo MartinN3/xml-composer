@@ -19,8 +19,6 @@ Route::post('/validate/show', 'ValidateController@show');
 
 Route::post('/import', 'ImportController@store');
 
-Route::post('/import/pohoda', 'ImportController@pohoda');
-
 Route::post('/backup', 'ImportController@backup');
 
 Route::get('/pohoda/url/{default?}', function ($default = null) {
