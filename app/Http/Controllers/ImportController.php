@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Helper;
 use App\Import;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http;
 use Illuminate\Http\FileHelpers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ImportController extends Controller
@@ -72,7 +73,7 @@ class ImportController extends Controller
             'name' => $name
         );
 
-        $import->logStore($importInformations);
+        Helper::logStore($importInformations);
 
         switch ($systemName) {
             case 'pohoda':
