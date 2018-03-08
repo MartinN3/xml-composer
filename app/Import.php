@@ -21,18 +21,6 @@ class Import extends Model
         $this->carbon = new Carbon();
     }
 
-    public function logStore($args)
-    {
-        $defaultTimestamps = [
-            'created_at' => $this->carbon,
-            'updated_at' => $this->carbon
-        ];
-
-        DB::table('imports_log')->insert( array_merge($defaultTimestamps, $args) );
-
-        return;
-    }
-
     public function parseShoptetXml($xml)
     {
         $args = [];
@@ -130,11 +118,13 @@ class Import extends Model
                 }
             }
         }
+        DB::table('stock_shoptet')->delete();
         DB::table('stock_shoptet')->insert($args);
     }
 
     public function parsePohodaXml($xml)
     {
+        var_dump($xml);die;
         $carbon = $this->carbon;
         $xpath = Helper::createXmlDom($xml);
     	$roots = $xpath->query('//rsp:responsePack/rsp:responsePackItem/lStk:listStock');
@@ -217,7 +207,7 @@ class Import extends Model
                         array_push($pictures, $picture);
     	            }
                     $pictures = implode('; ', $pictures);
-
+                    DB::table('stock')->delete();
                     DB::table('stock')->insertGetId(
                         [
                             'item_id' => $id,

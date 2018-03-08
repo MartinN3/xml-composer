@@ -23,14 +23,24 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/test', function (Request $request) {
     $name = \Illuminate\Support\Str::random(40);
+    $systemName = 'pohoda';
+    $uploadType = 'request';
 
-    \Illuminate\Support\Facades\Storage::put("./pohodatest/ulozene/{$name}.xml", $request->getContent());
+    $importInformations = array(
+        'systemName' => $systemName,
+        'uploadType' => $uploadType,
+        'name' => $name
+    );
+
+    $XML = \Illuminate\Support\Facades\Storage::put("xml/{$systemName}/{$name}.xml", $request->getContent());
     
-    $XML = \Illuminate\Support\Facades\Storage::get("./pohodatest/odpoved/response_export.xml");
+    $response = \Illuminate\Support\Facades\Storage::get("./pohodatest/odpoved/response_export.xml");
+    \App\Helper::respondOK($XML);
+    \App\Helper::logStore($importInformations);
 
     $import = new \App\Import;
     $import->parsePohodaXML($XML);
     \App\Export::exportFromXML();
-    
-    return $XML;
+
+    return;
 });
