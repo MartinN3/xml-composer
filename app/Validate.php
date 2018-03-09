@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\export;
+use App\Export;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 

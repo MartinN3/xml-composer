@@ -124,7 +124,7 @@ class Import extends Model
 
     public function parsePohodaXml($xml)
     {
-        var_dump($xml);die;
+        $args = [];
         $carbon = $this->carbon;
         $xpath = Helper::createXmlDom($xml);
     	$roots = $xpath->query('//rsp:responsePack/rsp:responsePackItem/lStk:listStock');
@@ -207,23 +207,25 @@ class Import extends Model
                         array_push($pictures, $picture);
     	            }
                     $pictures = implode('; ', $pictures);
-                    DB::table('stock')->delete();
-                    DB::table('stock')->insertGetId(
-                        [
-                            'item_id' => $id,
-                            'title' => $name,
-                            'code' => $code,
-                            'ean' => $ean,
-                            'sellingPrice' => $sellingPrice,
-                            'description' => $description,
-                            'pictures' => $pictures,
-                            'created_at' => $carbon->now(),
-                            'updated_at' => $carbon->now()
-                        ]
-                    );
+
+                    $values = [
+                        'item_id' => $id,
+                        'title' => $name,
+                        'code' => $code,
+                        'ean' => $ean,
+                        'sellingPrice' => $sellingPrice,
+                        'description' => $description,
+                        'pictures' => $pictures,
+                        'created_at' => $carbon->now(),
+                        'updated_at' => $carbon->now()
+                    ];
+
+                    array_push($args, $values);
     	        }
     	    }
     	}
+        DB::table('stock')->delete();
+        DB::table('stock')->insert($args);
     }
 
     public static function backupImages($systemName)

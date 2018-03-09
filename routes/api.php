@@ -35,12 +35,12 @@ Route::post('/test', function (Request $request) {
     $XML = \Illuminate\Support\Facades\Storage::put("xml/{$systemName}/{$name}.xml", $request->getContent());
     
     $response = \Illuminate\Support\Facades\Storage::get("./pohodatest/odpoved/response_export.xml");
-    \App\Helper::respondOK($XML);
+    \App\Helper::respondOK($response);
     \App\Helper::logStore($importInformations);
 
     $import = new \App\Import;
     $import->parsePohodaXML($XML);
     \App\Export::exportFromXML();
 
-    return;
+    return $XML;
 });

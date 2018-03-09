@@ -13,7 +13,7 @@ class Helper extends Model
     {
         $dom = new \DomDocument();
         $dom->preserveWhiteSpace = false;
-        $xml = Storage::get($xml);
+        // $xmlDom = Storage::get($xml);
         $dom->loadXML($xml);
         return new \DOMXPath($dom);
     }
@@ -34,8 +34,8 @@ class Helper extends Model
     {
       //get user account
       //get url to account storage folder
-      //return
-      $accountStorageUrl = 'test';
+      //return 
+      $accountStorageUrl = Storage::url('public/martin');
       return $accountStorageUrl;
     }
 

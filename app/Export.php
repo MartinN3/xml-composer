@@ -3,8 +3,9 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 
 class Export extends Model
 {
@@ -84,7 +85,7 @@ class Export extends Model
     $xml = \Illuminate\Support\Facades\Storage::get("xml/shoptet/{$name}.xml");
     // $xml = Storage::get('xml/shoptet/2FT8KZt6pRFqQ0Y51zrtZ72rW3jm3V3W7iIz6Pf1.xml');
     //FTP route to image by account used
-    $imagesAccountUrl = Helper::imagesAccountUrl();
+    $imagesAccountUrl = Request::root() . Helper::imagesAccountUrl();
     $dom->loadXML($xml);
     $xpath = new \DOMXPath($dom);
 
