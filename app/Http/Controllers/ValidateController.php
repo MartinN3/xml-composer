@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Validate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ValidateController extends Controller
 {
@@ -65,7 +66,7 @@ class ValidateController extends Controller
            break;
          case 'test':
             $validate->test();
-            return back();
+            return response()->download(storage_path(). '\app\export.xml', "export.xml");
             break;
          
          default:

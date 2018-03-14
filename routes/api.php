@@ -40,7 +40,6 @@ Route::post('/test', function (Request $request) {
 
     $import = new \App\Import;
     $import->parsePohodaXML($XML);
-    \App\Export::exportFromXML();
 
-    return $XML;
+    return;
 });

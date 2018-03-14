@@ -35,7 +35,7 @@ class Helper extends Model
       //get user account
       //get url to account storage folder
       //return 
-      $accountStorageUrl = Storage::url('public/martin');
+      $accountStorageUrl = Storage::url('public/martin/');
       return $accountStorageUrl;
     }
 

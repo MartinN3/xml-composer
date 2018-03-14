@@ -21,5 +21,6 @@ class Validate extends Model
   public function test()
   {
     Export::exportFromXML();
+    return;
   } 
 }

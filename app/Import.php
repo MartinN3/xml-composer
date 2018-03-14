@@ -129,14 +129,14 @@ class Import extends Model
         $xpath = Helper::createXmlDom($xml);
     	$roots = $xpath->query('//rsp:responsePack/rsp:responsePackItem/lStk:listStock');
     	if ($roots->length > 0) {
-    	    for ($i = 0; $i < $roots->length; $i++) {
-    	        $products = $xpath->query('./lStk:stock', $roots->item($i));
+            for ($i = 0; $i < $roots->length; $i++) {
+                $products = $xpath->query('./lStk:stock', $roots->item($i));
     	        for ($j = 0; $j < $products->length; $j++) {
     	            $node = $products->item($j);
     	            $id = $xpath->query('./stk:stockHeader/stk:id', $node)->item(0)->nodeValue;
     	            $name = trim($xpath->query('./stk:stockHeader/stk:name', $node)->item(0)->nodeValue);
     	            $code = trim(@$xpath->query('./stk:stockHeader/stk:code', $node)->item(0)->nodeValue);
-    	            $ean = @$xpath->query('./stk:stockHeader/stk:EAN', $node)->item(0)->nodeValue;
+    	            // $ean = @$xpath->query('./stk:stockHeader/stk:EAN', $node)->item(0)->nodeValue;
     	            $unit = @$xpath->query('./stk:stockHeader/stk:unit', $node)->item(0)->nodeValue;
     	            $mass = @$xpath->query('./stk:stockHeader/stk:mass', $node)->item(0)->nodeValue;
     	            $quantity = @$xpath->query('./stk:stockHeader/stk:count', $node)->item(0)->nodeValue;
@@ -191,13 +191,13 @@ class Import extends Model
     	                }
     	            }
 
-    	            if (empty($name)) {
-    	                continue;
-    	            }
+    	            // if (empty($name)) {
+    	            //     continue;
+    	            // }
 
-    	            if (empty($categoryIds[0])) {
-    	                continue;
-    	            }
+    	            // if (empty($categoryIds[0])) {
+    	            //     continue;
+    	            // }
 
                     $pictures = array();
     	            $pictures_items = $xpath->query('./stk:stockHeader/stk:pictures/stk:picture', $node);
@@ -212,7 +212,7 @@ class Import extends Model
                         'item_id' => $id,
                         'title' => $name,
                         'code' => $code,
-                        'ean' => $ean,
+                        // 'ean' => $ean,
                         'sellingPrice' => $sellingPrice,
                         'description' => $description,
                         'pictures' => $pictures,

@@ -20,7 +20,7 @@ class CreateStockTable extends Migration
             $table->string('code')->nullable();
             $table->float('sellingPrice', 12, 2)->nullable();
             $table->text('description')->nullable();
-            $table->integer('ean')->nullable();
+            // $table->bigInteger('ean')->nullable();
             $table->text('pictures')->nullable();
             $table->integer('item_id')->nullable();    
         });

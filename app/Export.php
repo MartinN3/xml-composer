@@ -61,7 +61,7 @@ class Export extends Model
     public static function exportFromXML()
     {
 
-    $data = DB::table('stock')->select('code', 'ean', 'pictures')->get();
+    $data = DB::table('stock')->select('code', 'pictures')->get();
 
     $codes = []; 
     foreach ($data as $item) {
@@ -75,7 +75,7 @@ class Export extends Model
 
     $dom = new \DomDocument();
     //SHOPTET EXPORT URL z nejakeho settingu
-    $url = "https://190671.myshoptet.com/export/productsComplete.xml?patternId=-5&hash=d113cdad83e0705e553247dae069608cd782f555042636e6cd13afa7e56b129d";
+    $url = "https://163138.myshoptet.com/export/productsComplete.xml?patternId=-5&hash=05a58660e838a411fd6e37f55db56bb14a9e7c279715cbee4d22d7fda1bcc043";
 
     $fileDownloaded = file_get_contents($url);
     $name = \Illuminate\Support\Str::random(40);
@@ -101,11 +101,25 @@ class Export extends Model
                         if ( isset($codes["$code"]['pictures']) && strlen($codes["$code"]['pictures'][0]) > 0 ) {
                             $nodePictures = $codes["$code"]['pictures'];
                             if ( $xpath->evaluate('./IMAGES', $node)->length >= 1 ) {
-                                $XML = '';
+                                $imagesNode = $xpath->query('./IMAGES', $node)->item(0);
+                                $xw = xmlwriter_open_memory();
+                                xmlwriter_set_indent($xw, 1);
                                 foreach ($nodePictures as $picture) {
-                                    $XML .= '<IMAGE description="">' . $imagesAccountUrl . $picture . '</IMAGE>';
+                                    xmlwriter_start_element($xw, 'IMAGE');
+
+                                    xmlwriter_start_attribute($xw, 'description');
+                                    xmlwriter_text($xw, '');
+                                    xmlwriter_end_attribute($xw);
+
+                                    xmlwriter_text($xw, $imagesAccountUrl . rawurlencode($picture));
+                                    xmlwriter_end_element($xw);
                                 }
-                                $xpath->query('./IMAGES', $node)->item(0)->nodeValue = $XML;
+                                xmlwriter_end_element($xw);
+                                $snippet = xmlwriter_output_memory($xw);
+                                $f = $dom->createDocumentFragment();
+                                $f->appendXML($snippet);
+                                $imagesNode->nodeValue = '';
+                                $imagesNode->appendChild($f);
                             } else {
                                 // $XML = '<IMAGES>';
                                 // foreach ($nodePictures as $picture) {
@@ -125,7 +139,7 @@ class Export extends Model
                                     xmlwriter_text($xw, '');
                                     xmlwriter_end_attribute($xw);
 
-                                    xmlwriter_text($xw, $imagesAccountUrl . $picture);
+                                    xmlwriter_text($xw, $imagesAccountUrl . rawurlencode($picture));
                                     xmlwriter_end_element($xw);
                                 }
 
@@ -143,6 +157,8 @@ class Export extends Model
     }
 
     //Zahashovat a ulozit zaznam do databaze, abych pak mohl vracet 
-    Storage::put('export.xml', $dom->saveXML());
+    $url = Storage::put('export.xml', $dom->saveXML());
+
+    return;
     }
 }

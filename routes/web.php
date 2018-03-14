@@ -50,7 +50,7 @@ Route::get('/shoptet/url/{default?}', function ($default = null)
 {
 	$systemName = 'shoptet';
 	if ($default === 'default') {
-		$url = "https://190671.myshoptet.com/export/productsComplete.xml?patternId=-5&hash=d113cdad83e0705e553247dae069608cd782f555042636e6cd13afa7e56b129d";
+		$url = "https://163138.myshoptet.com/export/productsComplete.xml?patternId=-5&hash=05a58660e838a411fd6e37f55db56bb14a9e7c279715cbee4d22d7fda1bcc043";
 
         $fileDownloaded = file_get_contents($url);
         $name = \Illuminate\Support\Str::random(40);
