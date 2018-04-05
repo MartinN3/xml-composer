@@ -45,9 +45,10 @@
     <body>
         <header>
             <h1>XML Composer</h1>
-            <p>Vítejte na hlavní stránce aplikace XML composer, která vznikla </p>
+            <p>Vítejte na hlavní stránce aplikace XML composer</p>
         </header>
         <main>
+            {{-- 
             <article>
                 <header>
                     <h2>Pohoda Import</h2>
@@ -76,6 +77,24 @@
                 <section>
                     <h3>Shoptet Import pomocí <b>URL</b> z jejich serverů</h3>
                     <a href="/shoptet/url">Shoptet import pomocí URL, tedy z jejich serverů</a>
+                </section>
+            </article>
+             --}}
+             <article>
+                <header>
+                    <h2>Provést Shoptet export s obrázky ze systému Pohoda</h2>
+                    <p>Tento export se poté naimportuje do shoptetu pomocí jejich rozhraní</p>
+                </header>
+                <section>
+                    <form action="/validate/show" method="POST">
+                        {{ csrf_field() }}
+                        <input type="hidden" id="systemName" name="systemName" value="shoptet">
+                        <input type="hidden" id="validationRequest" name="validationRequest" value="test">
+
+                        <div>
+                            <button type="submit">Stáhnout export</button>
+                        </div>
+                    </form>
                 </section>
             </article>
         </main>
