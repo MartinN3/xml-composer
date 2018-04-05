@@ -66,7 +66,7 @@ class ValidateController extends Controller
            break;
          case 'test':
             $validate->test();
-            return response()->download(storage_path(). '\app\export.xml', "export.xml");
+            return response()->download(storage_path(). '/app/export.xml', "export.xml");
             break;
          
          default:

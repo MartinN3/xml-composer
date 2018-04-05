@@ -57,7 +57,7 @@ class ImportController extends Controller
                 if (  null === $fileUploaded ) {  
                     die('`xml` is empty, probably forgot to choose XML to upload');
                 }
-                $name = $fileUploaded->hashName();
+                $name = Str::random(40) . ".xml";
                 $XML = $fileUploaded->storeAs("xml/{$systemName}", $name);
                 $XML = Storage::get($XML);
                 break;
